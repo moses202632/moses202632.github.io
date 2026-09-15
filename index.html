@@ -2766,7 +2766,7 @@ function Splash({ onComplete }) {
 }
 
 // ============== Navbar ==============
-function Navbar({ scrolled, onGearClick, editMode, mobileMenuOpen, setMobileMenuOpen, previewMode }) {
+function Navbar({ scrolled, onGearClick, editMode, mobileMenuOpen, setMobileMenuOpen, previewMode, ownerMode }) {
   const scrollTo = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -2786,7 +2786,7 @@ function Navbar({ scrolled, onGearClick, editMode, mobileMenuOpen, setMobileMenu
           <li><a href="#contact" onClick={(e) => { e.preventDefault(); scrollTo('contact'); }}>联系</a></li>
         </ul>
         <div className="nav-right">
-          {!previewMode && (
+          {!previewMode && ownerMode && (
             <button className="gear-btn" onClick={onGearClick} title="编辑台">
               {Icons.gear}
             </button>
@@ -3418,6 +3418,11 @@ function App() {
     const params = new URLSearchParams(window.location.search);
     return params.get('preview') === '1';
   });
+  // Owner mode check - editing UI is only shown to the owner (?edit=1)
+  const [ownerMode, setOwnerMode] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('edit') === '1';
+  });
 
   const [showSplash, setShowSplash] = useState(true);
   const [scrolled, setScrolled] = useState(false);
@@ -3845,6 +3850,7 @@ function App() {
         mobileMenuOpen={mobileMenuOpen}
         setMobileMenuOpen={setMobileMenuOpen}
         previewMode={previewMode}
+        ownerMode={ownerMode}
       />
       <Hero />
       <About />
@@ -3860,7 +3866,7 @@ function App() {
 
       <WorkModal work={selectedWork} onClose={() => setSelectedWork(null)} />
 
-      {!previewMode && (
+      {!previewMode && ownerMode && (
         <>
           <EditPanel
             isOpen={editPanelOpen}
